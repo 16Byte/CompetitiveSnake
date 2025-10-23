@@ -12,9 +12,13 @@ Game::Game()
       food(player1.body, cellCount),
       score(0),
       score2(0),
-      running(true)
+      running(true),
+      soundsEnabled(true)
 {
-    InitAudioDevice();
+    if (!IsAudioDeviceReady())
+    {
+        InitAudioDevice();
+    }
     
     Global::easyAndNormalModeMusic = LoadMusicStream("Assets/Sounds/Music/Breaking News by SAKUMAMATATA.mp3");
     PlayMusicStream(Global::easyAndNormalModeMusic);
@@ -24,11 +28,40 @@ Game::Game()
     deathSound = LoadSound("Assets/Sounds/SFX/Death (from Galaga).wav");
 }
 
+Game::Game(bool enableSounds) 
+    : player1(),
+      player2(Vector2{18, 15}, Vector2{-1, 0}),
+      food(player1.body, cellCount),
+      score(0),
+      score2(0),
+      running(true),
+      soundsEnabled(enableSounds)
+{
+    if (soundsEnabled)
+    {
+        if (!IsAudioDeviceReady())
+        {
+            InitAudioDevice();
+        }
+        
+        Global::easyAndNormalModeMusic = LoadMusicStream("Assets/Sounds/Music/Breaking News by SAKUMAMATATA.mp3");
+        PlayMusicStream(Global::easyAndNormalModeMusic);
+        SetMusicVolume(Global::easyAndNormalModeMusic, 0.25f);
+        
+        consumptionSound = LoadSound("Assets/Sounds/SFX/Consumption 1.wav");
+        deathSound = LoadSound("Assets/Sounds/SFX/Death (from Galaga).wav");
+    }
+}
+
 Game::~Game()
 {
-    UnloadSound(consumptionSound);
-    UnloadSound(deathSound);
-    CloseAudioDevice();
+    if (soundsEnabled)
+    {
+        UnloadSound(consumptionSound);
+        UnloadSound(deathSound);
+        UnloadMusicStream(Global::easyAndNormalModeMusic);
+        // Don't close audio device - it may be reused by another Game instance
+    }
 }
 
 void Game::Draw() const
@@ -57,7 +90,10 @@ void Game::CheckCollisionWithFood()
         food.position = food.GenerateRandomPos(player1.body);
         player1.addSegment = true;
         score++;
-        PlaySound(consumptionSound);
+        if (soundsEnabled)
+        {
+            PlaySound(consumptionSound);
+        }
     }
     
     if (Vector2Equals(player2.body[0], food.position))
@@ -65,7 +101,10 @@ void Game::CheckCollisionWithFood()
         food.position = food.GenerateRandomPos(player2.body);
         player2.addSegment = true;
         score2++;
-        PlaySound(consumptionSound);
+        if (soundsEnabled)
+        {
+            PlaySound(consumptionSound);
+        }
     }
 }
 
@@ -119,11 +158,27 @@ void Game::CheckCollisionWithTail()
 
 void Game::GameOver()
 {
-    player1.Reset(Global::easyAndNormalModeMusic);
-    player2.Reset(Global::easyAndNormalModeMusic);
+    if (soundsEnabled)
+    {
+        player1.Reset(Global::easyAndNormalModeMusic);
+        player2.Reset(Global::easyAndNormalModeMusic);
+    }
+    else
+    {
+        // For silent mode, just reset positions without music
+        player1.body = {Vector2{6, 9}, Vector2{5, 9}, Vector2{4, 9}};
+        player1.direction = {1, 0};
+        player2.body = {Vector2{18, 15}, Vector2{19, 15}, Vector2{20, 15}};
+        player2.direction = {-1, 0};
+    }
+    
     food.position = food.GenerateRandomPos(player1.body);
     running = false;
     score = 0;
     score2 = 0;
-    PlaySound(deathSound);
+    
+    if (soundsEnabled)
+    {
+        PlaySound(deathSound);
+    }
 }

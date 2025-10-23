@@ -41,6 +41,8 @@ void RegisterScenes()
 int main() 
 {
     InitializeWindow();
+
+    SetExitKey(0);
     
     // Register all scenes with the SceneManager
     RegisterScenes();
@@ -53,6 +55,12 @@ int main()
     {
         SceneManager::GetInstance().Update();
         SceneManager::GetInstance().Draw();
+    }
+    
+    // Clean up audio device before closing
+    if (IsAudioDeviceReady())
+    {
+        CloseAudioDevice();
     }
     
     CloseWindow();

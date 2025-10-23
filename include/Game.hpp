@@ -7,6 +7,7 @@ class Game
 {
     public:
         Game();
+        Game(bool enableSounds);
         ~Game();
         
         void Draw() const;
@@ -27,6 +28,7 @@ class Game
         int score;
         int score2;
         bool running;
+        bool soundsEnabled;
         
     private:
         void CheckCollisionWithFood();

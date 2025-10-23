@@ -22,6 +22,8 @@ class AIvsAIScene : public Scene
         double gameUpdateInterval;
         bool waitingToStart;
         float startPulseTimer;
+        float deathDelayTimer;
+        bool inDeathDelay;
         
         void DrawUI() const;
         void DrawStartScreen() const;

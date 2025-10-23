@@ -16,7 +16,9 @@ AIvsAIScene::AIvsAIScene()
     : Scene("AIvsAI", 3),
       gameUpdateInterval(GAME_UPDATE_INTERVAL),
       waitingToStart(true),
-      startPulseTimer(0.0f)
+      startPulseTimer(0.0f),
+      deathDelayTimer(0.0f),
+      inDeathDelay(false)
 {
 }
 
@@ -29,11 +31,38 @@ void AIvsAIScene::OnLoad()
     game->running = false;
     waitingToStart = true;
     startPulseTimer = 0.0f;
+    deathDelayTimer = 0.0f;
+    inDeathDelay = false;
 }
 
 void AIvsAIScene::Update()
 {
     startPulseTimer += GetFrameTime();
+    
+    // Handle death delay
+    if (inDeathDelay)
+    {
+        deathDelayTimer += GetFrameTime();
+        
+        // After 3 seconds, restart the game
+        if (deathDelayTimer >= 3.0f)
+        {
+            game.reset();  // Properly destroy old game
+            global.reset();
+            
+            game = std::make_unique<Game>();
+            global = std::make_unique<Global>();
+            
+            game->running = true;
+            game->player1.direction = {1, 0};
+            game->player2.direction = {-1, 0};
+            
+            inDeathDelay = false;
+            deathDelayTimer = 0.0f;
+        }
+        
+        return;  // Don't update game during delay
+    }
     
     // Auto-start after delay
     if (waitingToStart && startPulseTimer >= START_DELAY)
@@ -44,6 +73,13 @@ void AIvsAIScene::Update()
         
         game->running = true;
         waitingToStart = false;
+    }
+    
+    // If game stopped (someone died), start death delay
+    if (!waitingToStart && !game->running && !inDeathDelay)
+    {
+        inDeathDelay = true;
+        deathDelayTimer = 0.0f;
     }
     
     // If still waiting, return early
@@ -83,6 +119,31 @@ void AIvsAIScene::Draw() const
     if (waitingToStart)
     {
         DrawStartScreen();
+    }
+    else if (inDeathDelay)
+    {
+        // Draw the game state with overlay during death delay
+        DrawUI();
+        game->Draw();
+        
+        // Draw dark overlay with "RESTARTING..." text
+        int screenWidth = GetScreenWidth();
+        int screenHeight = GetScreenHeight();
+        
+        DrawRectangle(0, 0, screenWidth, screenHeight, Color{0, 0, 0, 180});
+        
+        const char* restartText = "RESTARTING...";
+        int restartWidth = MeasureText(restartText, 50);
+        int alpha = static_cast<int>(200 + 55 * sinf(deathDelayTimer * 4.0f));
+        Color restartColor = Color{255, 255, 255, static_cast<unsigned char>(alpha)};
+        
+        DrawText(
+            restartText,
+            (screenWidth - restartWidth) / 2,
+            screenHeight / 2,
+            50,
+            restartColor
+        );
     }
     else
     {

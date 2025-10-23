@@ -1,6 +1,9 @@
 #pragma once
 #include "Scene.hpp"
+#include "Game.hpp"
+#include "Global.hpp"
 #include "raylib.h"
+#include <memory>
 
 class MainMenuScene : public Scene
 {
@@ -21,4 +24,11 @@ class MainMenuScene : public Scene
         Color titleColor;
         float titlePulseTimer;
         int selectedOption; // 0=PvP, 1=PvAI, 2=AIvsAI, 3=Options, 4=Quit
+        
+        // Background AI battle
+        std::unique_ptr<Game> backgroundGame;
+        std::unique_ptr<Global> backgroundGlobal;
+        double gameUpdateInterval;
+        
+        void UpdateBackgroundAI();
 };
