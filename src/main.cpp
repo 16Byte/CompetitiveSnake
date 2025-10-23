@@ -24,25 +24,48 @@ Game Init()
 
 void GetInput(Game& game)
 {
-    if ((IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP)) && game.snake.direction.y != 1)
+    // Player 1 - WASD controls
+    if (IsKeyPressed(KEY_W) && game.player1.direction.y != 1)
     {
         game.running = true;
-        game.snake.direction = {0, -1};
+        game.player1.direction = {0, -1};
     }
-    else if ((IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) && game.snake.direction.y != -1)
+    else if (IsKeyPressed(KEY_S) && game.player1.direction.y != -1)
     {
         game.running = true;
-        game.snake.direction = {0, 1};
+        game.player1.direction = {0, 1};
     }
-    else if ((IsKeyPressed(KEY_A) || IsKeyPressed(KEY_LEFT)) && game.snake.direction.x != 1)
+    else if (IsKeyPressed(KEY_A) && game.player1.direction.x != 1)
     {
         game.running = true;
-        game.snake.direction = {-1, 0};
+        game.player1.direction = {-1, 0};
     }
-    else if ((IsKeyPressed(KEY_D) || IsKeyPressed(KEY_RIGHT)) && game.snake.direction.x != -1)
+    else if (IsKeyPressed(KEY_D) && game.player1.direction.x != -1)
     {
         game.running = true;
-        game.snake.direction = {1, 0};
+        game.player1.direction = {1, 0};
+    }
+    
+    // Player 2 - Arrow key controls
+    if (IsKeyPressed(KEY_UP) && game.player2.direction.y != 1)
+    {
+        game.running = true;
+        game.player2.direction = {0, -1};
+    }
+    else if (IsKeyPressed(KEY_DOWN) && game.player2.direction.y != -1)
+    {
+        game.running = true;
+        game.player2.direction = {0, 1};
+    }
+    else if (IsKeyPressed(KEY_LEFT) && game.player2.direction.x != 1)
+    {
+        game.running = true;
+        game.player2.direction = {-1, 0};
+    }
+    else if (IsKeyPressed(KEY_RIGHT) && game.player2.direction.x != -1)
+    {
+        game.running = true;
+        game.player2.direction = {1, 0};
     }
 }
 
@@ -72,11 +95,19 @@ void DrawWindow(const Game& game, const Global& global)
     
     const int scoreY = Game::borderSize + Game::cellSize * Game::cellCount + BORDER_PADDING * 2;
     DrawText(
-        TextFormat("Score: %i", game.score), 
+        TextFormat("P1 Score: %i", game.score), 
         Game::borderSize - BORDER_PADDING, 
         scoreY, 
         TITLE_FONT_SIZE, 
         global.snakeColor
+    );
+    
+    DrawText(
+        TextFormat("P2 Score: %i", game.score2), 
+        Game::borderSize + 320, 
+        scoreY, 
+        TITLE_FONT_SIZE, 
+        SKYBLUE
     );
 }
 

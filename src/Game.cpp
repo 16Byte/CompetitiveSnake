@@ -7,9 +7,11 @@
 using namespace std;
 
 Game::Game() 
-    : snake(),
-      food(snake.body, cellCount),
+    : player1(),
+      player2(Vector2{18, 15}, Vector2{-1, 0}),
+      food(player1.body, cellCount),
       score(0),
+      score2(0),
       running(true)
 {
     InitAudioDevice();
@@ -32,14 +34,16 @@ Game::~Game()
 void Game::Draw() const
 {
     food.Draw(cellSize, borderSize);
-    snake.Draw(cellSize, borderSize, Global::snakeColor);
+    player1.Draw(cellSize, borderSize, Global::snakeColor);
+    player2.Draw(cellSize, borderSize, SKYBLUE);
 }
 
 void Game::Update()
 {
     if (running)
     {
-        snake.Update();
+        player1.Update();
+        player2.Update();
         CheckCollisionWithFood();
         CheckCollisionWithEdges();
         CheckCollisionWithTail();
@@ -48,19 +52,33 @@ void Game::Update()
 
 void Game::CheckCollisionWithFood()
 {
-    if (Vector2Equals(snake.body[0], food.position))
+    if (Vector2Equals(player1.body[0], food.position))
     {
-        food.position = food.GenerateRandomPos(snake.body);
-        snake.addSegment = true;
+        food.position = food.GenerateRandomPos(player1.body);
+        player1.addSegment = true;
         score++;
+        PlaySound(consumptionSound);
+    }
+    
+    if (Vector2Equals(player2.body[0], food.position))
+    {
+        food.position = food.GenerateRandomPos(player2.body);
+        player2.addSegment = true;
+        score2++;
         PlaySound(consumptionSound);
     }
 }
 
 void Game::CheckCollisionWithEdges()
 {
-    if (snake.body[0].x == cellCount || snake.body[0].x == -1 || 
-        snake.body[0].y == cellCount || snake.body[0].y == -1)
+    if (player1.body[0].x == cellCount || player1.body[0].x == -1 || 
+        player1.body[0].y == cellCount || player1.body[0].y == -1)
+    {
+        GameOver();
+    }
+    
+    if (player2.body[0].x == cellCount || player2.body[0].x == -1 || 
+        player2.body[0].y == cellCount || player2.body[0].y == -1)
     {
         GameOver();
     }
@@ -68,10 +86,32 @@ void Game::CheckCollisionWithEdges()
 
 void Game::CheckCollisionWithTail()
 {
-    deque<Vector2> headlessBody = snake.body;
+    deque<Vector2> headlessBody = player1.body;
     headlessBody.pop_front();
     
-    if (Global::ElementInDeque(snake.body[0], headlessBody))
+    // Check if player1 hits its own tail
+    if (Global::ElementInDeque(player1.body[0], headlessBody))
+    {
+        GameOver();
+    }
+    
+    // Check if player1 hits player2's body
+    if (Global::ElementInDeque(player1.body[0], player2.body))
+    {
+        GameOver();
+    }
+    
+    deque<Vector2> headlessBody2 = player2.body;
+    headlessBody2.pop_front();
+    
+    // Check if player2 hits its own tail
+    if (Global::ElementInDeque(player2.body[0], headlessBody2))
+    {
+        GameOver();
+    }
+    
+    // Check if player2 hits player1's body
+    if (Global::ElementInDeque(player2.body[0], player1.body))
     {
         GameOver();
     }
@@ -79,9 +119,11 @@ void Game::CheckCollisionWithTail()
 
 void Game::GameOver()
 {
-    snake.Reset(Global::easyAndNormalModeMusic);
-    food.position = food.GenerateRandomPos(snake.body);
+    player1.Reset(Global::easyAndNormalModeMusic);
+    player2.Reset(Global::easyAndNormalModeMusic);
+    food.position = food.GenerateRandomPos(player1.body);
     running = false;
     score = 0;
+    score2 = 0;
     PlaySound(deathSound);
 }

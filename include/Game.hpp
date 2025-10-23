@@ -19,11 +19,13 @@ class Game
         static const int borderSize = 75;
         
         // Game objects
-        Snake snake;
+        Snake player1;
+        Snake player2;
         Food food;
         
         // Game state
         int score;
+        int score2;
         bool running;
         
     private:
