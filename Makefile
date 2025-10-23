@@ -2,7 +2,7 @@
 APP = snake
 SRC_DIR = src
 INCLUDE_DIR = include
-SRC = $(SRC_DIR)/main.cpp $(SRC_DIR)/Game.cpp $(SRC_DIR)/Snake.cpp $(SRC_DIR)/Food.cpp $(SRC_DIR)/Global.cpp
+SRC = $(SRC_DIR)/main.cpp $(SRC_DIR)/Game.cpp $(SRC_DIR)/Snake.cpp $(SRC_DIR)/Food.cpp $(SRC_DIR)/Global.cpp $(SRC_DIR)/Scene.cpp $(SRC_DIR)/SceneManager.cpp $(SRC_DIR)/MainMenuScene.cpp $(SRC_DIR)/GameScene.cpp $(SRC_DIR)/AIGameScene.cpp
 
 # === Compiler settings ===
 CC = clang++

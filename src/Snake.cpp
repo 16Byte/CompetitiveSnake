@@ -75,3 +75,64 @@ void Snake::ResetWithPosition(Music& music, Vector2 startPos, Vector2 startDirec
             Vector2{startPos.x - 2 * startDirection.x, startPos.y - 2 * startDirection.y}};
     direction = startDirection;
 }
+
+Vector2 Snake::GetAIDirection(Vector2 foodPos, const Snake& opponent) const
+{
+    Vector2 head = body[0];
+    
+    // Calculate Manhattan distance for each direction
+    auto getManhattanDistance = [](Vector2 from, Vector2 to) -> float {
+        return abs(from.x - to.x) + abs(from.y - to.y);
+    };
+    
+    // Check if position is valid (not hitting walls or snakes)
+    auto isValidPosition = [&](Vector2 pos) -> bool {
+        // Check walls (assuming 25x25 grid)
+        if (pos.x < 0 || pos.x >= 25 || pos.y < 0 || pos.y >= 25)
+            return false;
+        
+        // Check collision with self
+        for (const auto& segment : body)
+            if (Vector2Equals(segment, pos))
+                return false;
+        
+        // Check collision with opponent
+        for (const auto& segment : opponent.body)
+            if (Vector2Equals(segment, pos))
+                return false;
+        
+        return true;
+    };
+    
+    // Possible directions
+    Vector2 directions[] = {
+        {0, -1},  // Up
+        {0, 1},   // Down
+        {-1, 0},  // Left
+        {1, 0}    // Right
+    };
+    
+    Vector2 bestDirection = {0, 0};
+    float bestDistance = 1000000.0f;
+    
+    for (const auto& dir : directions)
+    {
+        // Don't reverse direction
+        if (dir.x == -direction.x && dir.y == -direction.y)
+            continue;
+        
+        Vector2 newPos = Vector2Add(head, dir);
+        
+        if (isValidPosition(newPos))
+        {
+            float distance = getManhattanDistance(newPos, foodPos);
+            if (distance < bestDistance)
+            {
+                bestDistance = distance;
+                bestDirection = dir;
+            }
+        }
+    }
+    
+    return bestDirection;
+}
