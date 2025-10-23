@@ -23,6 +23,9 @@ class AIGameScene : public Scene
         bool waitingForPlayer;
         float readyPulseTimer;
         
+        Vector2 playerNextDirection;
+        bool playerDirectionChanged;
+        
         void DrawUI() const;
         void DrawReadyScreen() const;
         void HandlePlayerInput();

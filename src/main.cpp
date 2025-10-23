@@ -2,6 +2,7 @@
 #include "MainMenuScene.hpp"
 #include "GameScene.hpp"
 #include "AIGameScene.hpp"
+#include "AIvsAIScene.hpp"
 #include "Game.hpp"
 #include "raylib.h"
 #include <memory>
@@ -32,6 +33,9 @@ void RegisterScenes()
     
     // Register PvAI Game scene (Build Index: 2)
     sceneManager.RegisterScene(std::make_unique<AIGameScene>());
+    
+    // Register AIvsAI Game scene (Build Index: 3)
+    sceneManager.RegisterScene(std::make_unique<AIvsAIScene>());
 }
 
 int main() 

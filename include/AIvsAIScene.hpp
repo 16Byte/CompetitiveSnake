@@ -4,11 +4,11 @@
 #include "Global.hpp"
 #include <memory>
 
-class GameScene : public Scene
+class AIvsAIScene : public Scene
 {
     public:
-        GameScene();
-        ~GameScene() override = default;
+        AIvsAIScene();
+        ~AIvsAIScene() override = default;
         
         void OnLoad() override;
         void Update() override;
@@ -20,16 +20,11 @@ class GameScene : public Scene
         std::unique_ptr<Global> global;
         
         double gameUpdateInterval;
-        bool waitingForPlayers;
-        float readyPulseTimer;
-        
-        Vector2 player1NextDirection;
-        Vector2 player2NextDirection;
-        bool player1DirectionChanged;
-        bool player2DirectionChanged;
+        bool waitingToStart;
+        float startPulseTimer;
         
         void DrawUI() const;
-        void DrawReadyScreen() const;
-        void HandleInput();
-        void CheckReadyInput();
+        void DrawStartScreen() const;
+        void UpdateAI1();
+        void UpdateAI2();
 };

@@ -20,5 +20,5 @@ class MainMenuScene : public Scene
         Color backgroundColor;
         Color titleColor;
         float titlePulseTimer;
-        int selectedOption; // 0=PvP, 1=PvAI, 2=Options, 3=Quit
+        int selectedOption; // 0=PvP, 1=PvAI, 2=AIvsAI, 3=Options, 4=Quit
 };

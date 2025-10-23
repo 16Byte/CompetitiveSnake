@@ -27,12 +27,12 @@ void MainMenuScene::Update()
     if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP))
     {
         selectedOption--;
-        if (selectedOption < 0) selectedOption = 3;
+        if (selectedOption < 0) selectedOption = 4;
     }
     else if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN))
     {
         selectedOption++;
-        if (selectedOption > 3) selectedOption = 0;
+        if (selectedOption > 4) selectedOption = 0;
     }
     
     // Selection
@@ -46,10 +46,13 @@ void MainMenuScene::Update()
             case 1: // Player vs AI
                 SceneManager::GetInstance().LoadScene(2);
                 break;
-            case 2: // Options (placeholder)
+            case 2: // AI vs AI
+                SceneManager::GetInstance().LoadScene(3);
+                break;
+            case 3: // Options (placeholder)
                 // TODO: Implement options scene
                 break;
-            case 3: // Quit
+            case 4: // Quit
                 // Close the window - the game loop will exit
                 CloseWindow();
                 break;
@@ -83,14 +86,15 @@ void MainMenuScene::Draw() const
     const char* options[] = {
         "PLAYER vs PLAYER",
         "PLAYER vs AI",
+        "AI vs AI",
         "OPTIONS",
         "QUIT GAME"
     };
     
-    int startY = screenHeight / 2 - 60;
-    int spacing = 60;
+    int startY = screenHeight / 2 - 80;
+    int spacing = 50;
     
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
     {
         Color optionColor = (i == selectedOption) ? GREEN : LIGHTGRAY;
         int fontSize = OPTION_FONT_SIZE;

@@ -15,7 +15,9 @@ AIGameScene::AIGameScene()
     : Scene("AIGame", 2),
       gameUpdateInterval(GAME_UPDATE_INTERVAL),
       waitingForPlayer(true),
-      readyPulseTimer(0.0f)
+      readyPulseTimer(0.0f),
+      playerNextDirection{0, 0},
+      playerDirectionChanged(false)
 {
 }
 
@@ -28,6 +30,9 @@ void AIGameScene::OnLoad()
     game->running = false;
     waitingForPlayer = true;
     readyPulseTimer = 0.0f;
+    
+    playerNextDirection = {0, 0};
+    playerDirectionChanged = false;
 }
 
 void AIGameScene::Update()
@@ -56,6 +61,13 @@ void AIGameScene::Update()
     // Update game logic at fixed interval
     if (Global::EventTriggered(gameUpdateInterval))
     {
+        // Apply buffered direction change before updating
+        if (playerDirectionChanged)
+        {
+            game->player1.direction = playerNextDirection;
+            playerDirectionChanged = false;
+        }
+        
         game->Update();
     }
     
@@ -125,26 +137,43 @@ void AIGameScene::DrawUI() const
 
 void AIGameScene::HandlePlayerInput()
 {
-    // Player 1 - WASD controls only
-    if (IsKeyPressed(KEY_W) && game->player1.direction.y != 1)
+    // Get the actual current direction from body position (head vs second segment)
+    Vector2 playerActualDirection = game->player1.direction;
+    
+    if (game->player1.body.size() >= 2)
     {
-        game->running = true;
-        game->player1.direction = {0, -1};
+        Vector2 head = game->player1.body[0];
+        Vector2 neck = game->player1.body[1];
+        playerActualDirection = {head.x - neck.x, head.y - neck.y};
     }
-    else if (IsKeyPressed(KEY_S) && game->player1.direction.y != -1)
+    
+    // Player 1 - WASD controls only (only allow one direction change per update)
+    if (!playerDirectionChanged)
     {
-        game->running = true;
-        game->player1.direction = {0, 1};
-    }
-    else if (IsKeyPressed(KEY_A) && game->player1.direction.x != 1)
-    {
-        game->running = true;
-        game->player1.direction = {-1, 0};
-    }
-    else if (IsKeyPressed(KEY_D) && game->player1.direction.x != -1)
-    {
-        game->running = true;
-        game->player1.direction = {1, 0};
+        if (IsKeyPressed(KEY_W) && playerActualDirection.y != 1)
+        {
+            game->running = true;
+            playerNextDirection = {0, -1};
+            playerDirectionChanged = true;
+        }
+        else if (IsKeyPressed(KEY_S) && playerActualDirection.y != -1)
+        {
+            game->running = true;
+            playerNextDirection = {0, 1};
+            playerDirectionChanged = true;
+        }
+        else if (IsKeyPressed(KEY_A) && playerActualDirection.x != 1)
+        {
+            game->running = true;
+            playerNextDirection = {-1, 0};
+            playerDirectionChanged = true;
+        }
+        else if (IsKeyPressed(KEY_D) && playerActualDirection.x != -1)
+        {
+            game->running = true;
+            playerNextDirection = {1, 0};
+            playerDirectionChanged = true;
+        }
     }
 }
 
