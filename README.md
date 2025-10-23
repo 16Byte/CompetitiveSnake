@@ -2,6 +2,11 @@
 
 A modern multiplayer snake game built with C++ and Raylib, featuring both local multiplayer and AI opponent modes.
 
+![Screencast_20251023_005748-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/f7d067f7-61fb-41fe-a78f-4f7635d3e165)
+![Screencast_20251023_005825-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/24fd3688-58b1-4f05-8736-5fa962c9524b)
+![Screencast_20251023_005951-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/207707c6-e6b0-4d6d-b032-08f83827dd80)
+
+
 ## Features
 
 ### Game Modes
