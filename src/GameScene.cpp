@@ -50,6 +50,20 @@ void GameScene::Update()
         return;
     }
     
+    // If game ended, wait for any key to restart
+    if (!game->running && game->winner != 0)
+    {
+        // Check for any key press to restart
+        if (GetKeyPressed() != 0 || IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE))
+        {
+            game->winner = 0;
+            waitingForPlayers = true;
+            game->running = false;
+            readyPulseTimer = 0.0f;
+        }
+        return;
+    }
+    
     // Update music
     if (game->running)
     {
@@ -97,6 +111,55 @@ void GameScene::Draw() const
     {
         DrawUI();
         game->Draw();
+        
+        // Draw victory screen if game ended
+        if (!game->running && game->winner != 0)
+        {
+            int screenWidth = GetScreenWidth();
+            int screenHeight = GetScreenHeight();
+            
+            // Semi-transparent overlay
+            DrawRectangle(0, 0, screenWidth, screenHeight, Color{0, 0, 0, 180});
+            
+            const char* victoryText;
+            Color victoryColor;
+            
+            if (game->winner == 1)
+            {
+                victoryText = "PLAYER 1 WINS!";
+                victoryColor = Global::snakeColor;
+            }
+            else if (game->winner == 2)
+            {
+                victoryText = "PLAYER 2 WINS!";
+                victoryColor = SKYBLUE;
+            }
+            else
+            {
+                victoryText = "TIE GAME!";
+                victoryColor = YELLOW;
+            }
+            
+            int victoryWidth = MeasureText(victoryText, 60);
+            DrawText(
+                victoryText,
+                (screenWidth - victoryWidth) / 2,
+                screenHeight / 2 - 50,
+                60,
+                victoryColor
+            );
+            
+            // Instructions
+            const char* instruction = "Press any key to continue";
+            int instrWidth = MeasureText(instruction, 25);
+            DrawText(
+                instruction,
+                (screenWidth - instrWidth) / 2,
+                screenHeight / 2 + 50,
+                25,
+                LIGHTGRAY
+            );
+        }
     }
     
     EndDrawing();

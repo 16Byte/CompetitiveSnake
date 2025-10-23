@@ -29,11 +29,13 @@ class Game
         int score2;
         bool running;
         bool soundsEnabled;
+        int winner; // 0 = no winner yet, 1 = player1, 2 = player2, 3 = tie
         
     private:
         void CheckCollisionWithFood();
         void CheckCollisionWithEdges();
         void CheckCollisionWithTail();
+        void DeclareWinner(int winnerNum);
         
         // Audio
         Sound consumptionSound;

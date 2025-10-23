@@ -44,6 +44,12 @@ void AIvsAIScene::Update()
     {
         deathDelayTimer += GetFrameTime();
         
+        // Show victory message during delay
+        if (game->winner != 0)
+        {
+            // Victory screen is shown in Draw()
+        }
+        
         // After 3 seconds, restart the game
         if (deathDelayTimer >= 3.0f)
         {
@@ -126,22 +132,54 @@ void AIvsAIScene::Draw() const
         DrawUI();
         game->Draw();
         
-        // Draw dark overlay with "RESTARTING..." text
+        // Draw dark overlay
         int screenWidth = GetScreenWidth();
         int screenHeight = GetScreenHeight();
         
         DrawRectangle(0, 0, screenWidth, screenHeight, Color{0, 0, 0, 180});
         
+        // Show winner
+        if (game->winner != 0)
+        {
+            const char* victoryText;
+            Color victoryColor;
+            
+            if (game->winner == 1)
+            {
+                victoryText = "GREEN AI WINS!";
+                victoryColor = Global::snakeColor;
+            }
+            else if (game->winner == 2)
+            {
+                victoryText = "RED AI WINS!";
+                victoryColor = RED;
+            }
+            else
+            {
+                victoryText = "TIE GAME!";
+                victoryColor = YELLOW;
+            }
+            
+            int victoryWidth = MeasureText(victoryText, 60);
+            DrawText(
+                victoryText,
+                (screenWidth - victoryWidth) / 2,
+                screenHeight / 2 - 60,
+                60,
+                victoryColor
+            );
+        }
+        
         const char* restartText = "RESTARTING...";
-        int restartWidth = MeasureText(restartText, 50);
+        int restartWidth = MeasureText(restartText, 40);
         int alpha = static_cast<int>(200 + 55 * sinf(deathDelayTimer * 4.0f));
         Color restartColor = Color{255, 255, 255, static_cast<unsigned char>(alpha)};
         
         DrawText(
             restartText,
             (screenWidth - restartWidth) / 2,
-            screenHeight / 2,
-            50,
+            screenHeight / 2 + 20,
+            40,
             restartColor
         );
     }
